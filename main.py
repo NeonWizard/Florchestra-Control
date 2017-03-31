@@ -75,4 +75,3 @@ print()
 
 startEngine(sliding=False, bigRange=bigRange)
 playSong(songName, bigRange=bigRange)
-stopEngine()
