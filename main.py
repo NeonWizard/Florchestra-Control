@@ -51,7 +51,7 @@ def stopEngine():
 	print("Engine terminated.\n")
 
 def playSong(songName, bigRange=False):
-	print("Playing {}".format(songName))
+	print("Playing {}.".format(songName))
 	m_session.exec_command("cd python; python midiplayer{}.py {}".format("2" if bigRange else "", songName))
 
 	# Block until song is over
