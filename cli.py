@@ -3,6 +3,7 @@ import time
 import atexit
 import getpass
 import os
+import _thread
 
 # ==============================
 #   Initialize the SSH objects
@@ -35,6 +36,8 @@ m_session.get_pty()
 # ========================
 #    Control functions
 # ========================
+songPlaying = False
+
 def startEngine(sliding=False, bigRange=False):
 	print("Starting engine...")
 
@@ -50,15 +53,25 @@ def stopEngine():
 	p_session.send("\x03")
 	print("Engine terminated.\n")
 
-def playSong(songName, bigRange=False):
+def playSong(songName, bigRange=False, finishCB=lambda: None):
+	global songPlaying
+
 	print("Playing {}.".format(songName))
 	m_session.exec_command("cd python; python midiplayer{}.py {}".format("2" if bigRange else "", songName))
+
+	songPlaying = True
+	_thread.start_new_thread(waitSong, (finishCB, ))
+
+def waitSong(cb):
+	global songPlaying
 
 	# Block until song is over
 	while not m_session.exit_status_ready():
 		time.sleep(0.1)
 
 	print("Song finished.\n")
+	cb()
+	songPlaying = False
 
 def getSongs():
 	pass
@@ -76,6 +89,9 @@ def main():
 
 	startEngine(sliding=False, bigRange=bigRange)
 	playSong(songName, bigRange=bigRange)
+
+	while songPlaying:
+		time.sleep(0.1)
 
 if __name__ == "__main__":
 	main()
