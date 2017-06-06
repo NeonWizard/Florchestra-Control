@@ -106,10 +106,19 @@ class Handler(BaseHTTPRequestHandler):
 				self.sendError(409, "Engine is already running.")
 				return
 
+			status_code, body = self.getJSON()
+			if status_code < 200 or status_code > 299:
+				self.sendError(status_code, "Could not parse request body as JSON.")
+				return
+
+			bigRange = False
+			if "bigrange" in body:
+				bigRange = body["bigrange"]
+
 			self.send_response(200)
 			self.end_headers()
 			
-			control.startEngine()
+			control.startEngine(bigRange=bigRange)
 
 		elif self.checkPath("/stopEngine"):
 			if not control.engineOn:
@@ -136,10 +145,14 @@ class Handler(BaseHTTPRequestHandler):
 				self.sendError(400, "Song key isn't present in request body.")
 				return
 
+			bigRange = False
+			if "bigrange" in body:
+				bigRange = body["bigrange"]
+
 			self.send_response(200)
 			self.end_headers()
 
-			control.playSong(body["song"], bigRange=False)
+			control.playSong(body["song"], bigRange=bigRange)
 		else:
 			self.handle404()
 
