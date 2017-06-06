@@ -95,6 +95,12 @@ class Handler(BaseHTTPRequestHandler):
 			self.end_headers()
 
 			self.wfile.write(json.dumps(control.getSongs()).encode("utf-8"))
+		elif self.checkPath("/engineState"):
+			self.send_response(200)
+			self.send_header("Content-Type", "application/json")
+			self.end_headers()
+
+			self.wfile.write(json.dumps(control.engineState).encode("utf-8"))
 		else:
 			self.handle404()
 
@@ -102,7 +108,7 @@ class Handler(BaseHTTPRequestHandler):
 		self.loadCookie()
 
 		if self.checkPath("/startEngine"):
-			if control.engineOn:
+			if control.engineState["active"]:
 				self.sendError(409, "Engine is already running.")
 				return
 
@@ -121,7 +127,7 @@ class Handler(BaseHTTPRequestHandler):
 			control.startEngine(bigRange=bigRange)
 
 		elif self.checkPath("/stopEngine"):
-			if not control.engineOn:
+			if not control.engineState["active"]:
 				self.sendError(409, "Engine isn't running.")
 				return
 
@@ -132,7 +138,7 @@ class Handler(BaseHTTPRequestHandler):
 
 		elif self.checkPath("/play"):
 			# check if engine is started or not
-			if not control.engineOn:
+			if not control.engineState["active"]:
 				self.sendError(409, "Engine isn't running.")
 				return
 
@@ -155,7 +161,7 @@ class Handler(BaseHTTPRequestHandler):
 			control.playSong(body["song"], bigRange=bigRange)
 
 		elif self.checkPath("/stopSong"):
-			if not control.engineOn or not control.songPlaying:
+			if not control.engineState["active"] or not control.songPlaying:
 				self.sendError(409, "Engine isn't on and/or no song is currently playing.")
 				return
 

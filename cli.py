@@ -36,15 +36,19 @@ p_session.invoke_shell()
 # ========================
 # -- Globals --
 songPlaying = False
-engineOn = False
+engineState = {
+	"active": False,
+	"bigRange": False
+}
 playSession = None
 
 def startEngine(sliding=False, bigRange=False):
-	global engineOn
+	global engineState
 	print("Starting engine...")
 
 	p_session.send("cd c++;\n./engine {} {}\n".format(int(not sliding), int(bigRange)))
-	engineOn = True
+	engineState["active"] = True
+	engineState["bigRange"] = bigRange
 
 	# Give it time to set up
 	time.sleep(4)
@@ -52,11 +56,11 @@ def startEngine(sliding=False, bigRange=False):
 	print("Engine started.\n")
 
 def stopEngine():
-	global engineOn
+	global engineState
 
 	print("Terminating engine...")
 	p_session.send("\x03")
-	engineOn = False
+	engineState["active"] = False
 	print("Engine terminated.\n")
 
 def playSong(songName, bigRange=False, finishCB=lambda: None):
