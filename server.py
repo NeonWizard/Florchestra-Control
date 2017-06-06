@@ -153,6 +153,17 @@ class Handler(BaseHTTPRequestHandler):
 			self.end_headers()
 
 			control.playSong(body["song"], bigRange=bigRange)
+
+		elif self.checkPath("/stopSong"):
+			if not control.engineOn or not control.songPlaying:
+				self.sendError(409, "Engine isn't on and/or no song is currently playing.")
+				return
+
+			self.send_response(200)
+			self.end_headers()
+
+			control.stopSong()
+
 		else:
 			self.handle404()
 
