@@ -37,6 +37,7 @@ p_session.invoke_shell()
 # -- Globals --
 songPlaying = False
 engineOn = False
+playSession = None
 
 def startEngine(sliding=False, bigRange=False):
 	global engineOn
@@ -60,16 +61,27 @@ def stopEngine():
 
 def playSong(songName, bigRange=False, finishCB=lambda: None):
 	global songPlaying
+	global playSession
 
 	m_transport = master.get_transport()
 	m_session = m_transport.open_session()
 	m_session.get_pty()
+	playSession = m_session
 
 	print("Playing {}.".format(songName))
 	m_session.exec_command("cd python; python midiplayer{}.py {}".format("2" if bigRange else "", songName))
 
 	songPlaying = True
 	_thread.start_new_thread(waitSong, (m_session, finishCB, ))
+
+def stopSong():
+	global songPlaying
+	global playSession
+
+	if not playSession: return
+
+	playSession.send("\x03")
+	playSession = None
 
 def waitSong(m_session, cb):
 	global songPlaying
