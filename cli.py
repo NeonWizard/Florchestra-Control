@@ -63,6 +63,8 @@ def stopEngine():
 	engineState["active"] = False
 	print("Engine terminated.\n")
 
+	stopSong()
+
 def playSong(songName, bigRange=False, finishCB=lambda: None):
 	global songPlaying
 	global playSession
