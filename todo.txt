@@ -1,2 +1,3 @@
 Make cli.py into a singleton class
+don't allow multiple songs to be played at once
 
