@@ -175,7 +175,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main():
-	listen = ("127.0.0.1", 8080)
+	listen = ("0.0.0.0", 3055)
 	server = HTTPServer(listen, Handler)
 
 	print("Listening...")
