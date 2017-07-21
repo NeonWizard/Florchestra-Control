@@ -65,7 +65,7 @@ def stopEngine():
 
 	stopSong()
 
-def playSong(songName, bigRange=False, finishCB=lambda: None):
+def playSong(songName, finishCB=lambda: None):
 	global songPlaying
 	global playSession
 
@@ -75,7 +75,7 @@ def playSong(songName, bigRange=False, finishCB=lambda: None):
 	playSession = m_session
 
 	print("Playing {}.".format(songName))
-	m_session.exec_command("cd python; python midiplayer{}.py {}".format("2" if bigRange else "", songName))
+	m_session.exec_command("cd python; python midiplayer{}.py {}".format("2" if engineState["bigRange"] else "", songName))
 
 	songPlaying = True
 	_thread.start_new_thread(waitSong, (m_session, finishCB, ))
@@ -141,7 +141,7 @@ def main():
 	print()
 
 	startEngine(sliding=False, bigRange=bigRange)
-	playSong(songName, bigRange=bigRange)
+	playSong(songName)
 
 	while songPlaying:
 		time.sleep(0.1)

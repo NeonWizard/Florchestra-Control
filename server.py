@@ -118,13 +118,16 @@ class Handler(BaseHTTPRequestHandler):
 				return
 
 			bigRange = False
+			sliding = False
 			if "bigrange" in body:
 				bigRange = body["bigrange"]
+			if "sliding" in body:
+				sliding = body["sliding"]
 
 			self.send_response(200)
 			self.end_headers()
 			
-			control.startEngine(bigRange=bigRange)
+			control.startEngine(bigRange=bigRange, sliding=sliding)
 
 		elif self.checkPath("/stopEngine"):
 			if not control.engineState["active"]:
@@ -151,14 +154,12 @@ class Handler(BaseHTTPRequestHandler):
 				self.sendError(400, "Song key isn't present in request body.")
 				return
 
-			bigRange = False
-			if "bigrange" in body:
-				bigRange = body["bigrange"]
+			bigRange = control.engineState["bigrange"]
 
 			self.send_response(200)
 			self.end_headers()
 
-			control.playSong(body["song"], bigRange=bigRange)
+			control.playSong(body["song"])
 
 		elif self.checkPath("/stopSong"):
 			if not control.engineState["active"] or not control.songPlaying:
